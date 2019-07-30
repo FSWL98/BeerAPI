@@ -1,13 +1,29 @@
 <template>
-  <div id="app">
-    <img src="./assets/logo.png">
-    <router-view/>
-  </div>
+  <v-app id="app">
+    <v-content>
+      <v-container fluid>
+        <router-view/>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  beforeCreate() {
+    console.log('before create app')
+  },
+  created() {
+    console.log('create app')
+  },
+  beforeMount() {
+    console.log('before mount app')
+  },
+  mounted() {
+    console.log('mounted app')
+  }
+
 }
 </script>
 
