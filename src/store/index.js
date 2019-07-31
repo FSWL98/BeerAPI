@@ -7,12 +7,11 @@ Vue.use(Vuex)
 export default new Vuex.Store ({
   state: {
     beers: [],
-    favorites: [],
-    loaded: false
+    favorites: []
   },
   getters: {
-    BEERS: state => {
-      return state.beers
+    BEERS: state => id => {
+      return state.beers.filter(beer => beer.id >= id).filter(beer => beer.id < id+15)
     },
     FAVORITES: state => {
       return state.favorites
@@ -24,7 +23,7 @@ export default new Vuex.Store ({
   mutations: {
     FAV_BEER: (state, payload) => {
       state.favorites.push(payload)
-      state.beers[payload.id - 1].isFavorite = true
+      state.beers[payload.id-1].isFavorite = true
     },
     UNFAV_BEER: (state, payload) => {
       state.beers[payload.id - 1].isFavorite = false
@@ -36,17 +35,17 @@ export default new Vuex.Store ({
     },
     SET_BEERS: (state, payload) => {
       state.beers = payload
-      console.log('set')
+      state.beers.forEach(function (beer) {
+        beer.isFavorite = false
+      })
     }
   },
   actions: {
     async getBeers ({commit}) {
-      const response = await axios.get('https://api.punkapi.com/v2/beers?per_page=30').then(response => {
-          console.log(response.data)
+      const response = await axios.get('https://api.punkapi.com/v2/beers?per_page=80').then(response => {
           commit('SET_BEERS', response.data)
         }
       )
-      console.log('everything is done')
 
     },
     favBeer ({commit}, beer) {

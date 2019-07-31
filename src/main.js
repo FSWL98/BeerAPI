@@ -8,6 +8,7 @@ import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
+//todo: add a navbar component
 
 Vue.config.productionTip = false
 const vuetifyOptions = {

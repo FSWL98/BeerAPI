@@ -10,19 +10,7 @@
 
 <script>
 export default {
-  name: 'App',
-  beforeCreate() {
-    console.log('before create app')
-  },
-  created() {
-    console.log('create app')
-  },
-  beforeMount() {
-    console.log('before mount app')
-  },
-  mounted() {
-    console.log('mounted app')
-  }
+  name: 'App'
 
 }
 </script>
@@ -34,6 +22,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 0;
+  background-image: url("assets/background1.png");
 }
 </style>
