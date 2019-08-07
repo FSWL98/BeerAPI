@@ -32,7 +32,10 @@
                             star_rate
                           </v-icon>
                       </v-list-tile-action>
-                      <v-list-tile-action class="moreInfo" @click="moveTo(beer.id)" title="Get more info">
+                      <v-list-tile-action>
+                          <v-icon class="buy">add_shopping_cart</v-icon>
+                      </v-list-tile-action>
+                      <v-list-tile-action class="moreInfo" @click="moveTo(beer)" title="Get more info">
                         Learn more...
                       </v-list-tile-action>
                     </v-list-tile-content>
@@ -44,7 +47,7 @@
         <div class="text-center">
           <v-pagination
             v-model="page"
-            :length="6"
+            :length="this.pags"
             dark
             circle
             @change="this.$forceUpdate()"
@@ -64,18 +67,39 @@
         return {
           beers: [],
           loaded: false,
-          page: 5
+          page: 1,
+          pags: 6
         }
       },
-      async beforeCreate() {
-        if (!this.loaded) {
+      async mounted() {
           await this.$store.dispatch('getBeers')
-          this.beers = this.$store.getters.BEERS((this.page-1)*15 + 1)
+          if (this.$route.name === 'favorites') {
+            this.beers = this.$store.getters.FAVORITES
+            console.log('favorites')
+            console.log(this.beers)
+          }
+          else {
+            this.beers = this.$store.getters.BEERS((this.page-1)*15 + 1)
+            console.log('usua2l')
+          }
           this.loaded = true
-        }
+        this.forceUpdate()
+          console.log('loaded')
       },
       beforeUpdate() {
-        this.beers = this.$store.getters.BEERS((this.page-1)*15 + 1)
+        if (this.$route.name === 'favorites') {
+          this.beers = this.$store.getters.FAVORITES
+          console.log(this.beers)
+          this.pags = Math.round(this.beers.length/15) + 1
+          if (this.beers.length%15 === 0) {
+            this.pags -= 1
+          }
+          console.log(this.pags)
+        }
+        else {
+          this.beers = this.$store.getters.BEERS((this.page-1)*15 + 1)
+          this.pags = 6
+        }
       },
       methods: {
         favBeer(beer) {
@@ -86,6 +110,14 @@
         unfavBeer(beer) {
           this.$store.dispatch('unfavBeer', beer)
           this.beers = this.$store.getters.BEERS
+          this.$forceUpdate()
+        },
+        moveTo(beer) {
+          this.$router.push({name: 'beer', params: {id: beer.id}})
+        },
+        toFav() {
+          this.$router.push('favorites')
+          console.log('tofav')
           this.$forceUpdate()
         }
       }
@@ -110,10 +142,10 @@
     font-size: smaller;
     color: #a9a9a9;
     font-weight: normal;
+    margin-right: 30px;
   }
   .fav {
-    margin-right: 150px;
-    margin-left: 150px;
+    margin-left: 80px;
     max-width: 24px;
   }
   .picked {
@@ -124,10 +156,15 @@
     font-weight: normal;
     font-style: italic;
     cursor: pointer;
-    margin-left: 1px;
+    margin-left: 20px;
   }
   .mx-auto {
     opacity: 0.95;
+  }
+  .buy {
+    margin-left: 1px;
+    margin-right: 50px;
+    cursor: pointer;
   }
 
 

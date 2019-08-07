@@ -7,7 +7,8 @@ Vue.use(Vuex)
 export default new Vuex.Store ({
   state: {
     beers: [],
-    favorites: []
+    favorites: [],
+    loaded: false
   },
   getters: {
     BEERS: state => id => {
@@ -18,6 +19,9 @@ export default new Vuex.Store ({
     },
     LOADED: state => {
       return state.loaded
+    },
+    BEER: state => id => {
+      return state.beers.find(beer => beer.id === id)
     }
   },
   mutations: {
@@ -38,6 +42,7 @@ export default new Vuex.Store ({
       state.beers.forEach(function (beer) {
         beer.isFavorite = false
       })
+      state.loaded = true
     }
   },
   actions: {
