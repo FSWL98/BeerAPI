@@ -1,5 +1,4 @@
 <template>
-<main>
   <v-layout row>
     <v-flex offset-md2 md8>
       <v-container fluid grid-list-md>
@@ -26,10 +25,10 @@
 
                       <v-list-tile-action>
                           <v-icon v-if="beer.isFavorite" class="fav picked" @click="unfavBeer(beer)" title="Remove from favorites">
-                            star_rate
+                            favorite
                           </v-icon>
                           <v-icon v-else class="fav" @click="favBeer(beer)" title="Add to favorites">
-                            star_rate
+                            favorite
                           </v-icon>
                       </v-list-tile-action>
                       <v-list-tile-action>
@@ -54,10 +53,26 @@
           ></v-pagination>
         </div>
       </v-container>
+      <v-bottom-navigation
+        :value="activeBtn"
+        color="yellow"
+        horizontal
+        dark
+      >
+        <v-btn @click="toAll">
+          <span>All</span>
+          <v-icon>dashboard</v-icon>
+        </v-btn>
+
+        <v-btn @click="toFavorites">
+          <span>Favorites</span>
+          <v-icon>favorite</v-icon>
+        </v-btn>
+
+      </v-bottom-navigation>
     </v-flex>
 
   </v-layout>
-</main>
 </template>
 
 <script>
@@ -68,36 +83,31 @@
           beers: [],
           loaded: false,
           page: 1,
-          pags: 6
+          pags: 6,
+          activeBtn: 0
         }
       },
       async mounted() {
+        if (!this.loaded)
           await this.$store.dispatch('getBeers')
-          if (this.$route.name === 'favorites') {
-            this.beers = this.$store.getters.FAVORITES
-            console.log('favorites')
-            console.log(this.beers)
-          }
-          else {
-            this.beers = this.$store.getters.BEERS((this.page-1)*15 + 1)
-            console.log('usua2l')
-          }
-          this.loaded = true
+        if (this.$route.name === 'favorites') {
+          this.beers = this.$store.getters.FAVORITES
+          this.activeBtn = 1
+        } else {
+          this.beers = this.$store.getters.BEERS((this.page - 1) * 15 + 1)
+        }
+        this.loaded = true
         this.forceUpdate()
-        console.log('loaded')
       },
       beforeUpdate() {
         if (this.$route.name === 'favorites') {
           this.beers = this.$store.getters.FAVORITES
-          console.log(this.beers)
-          this.pags = Math.round(this.beers.length/15) + 1
-          if (this.beers.length%15 === 0) {
+          this.pags = Math.round(this.beers.length / 15) + 1
+          if (this.beers.length % 15 === 0) {
             this.pags -= 1
           }
-          console.log(this.pags)
-        }
-        else {
-          this.beers = this.$store.getters.BEERS((this.page-1)*15 + 1)
+        } else {
+          this.beers = this.$store.getters.BEERS((this.page - 1) * 15 + 1)
           this.pags = 6
         }
       },
@@ -115,10 +125,19 @@
         moveTo(beer) {
           this.$router.push({name: 'beer', params: {id: beer.id}})
         },
-        toFav() {
+        toFavorites() {
           this.$router.push('favorites')
-          console.log('tofav')
-          this.$forceUpdate()
+          this.beers = this.$store.getters.FAVORITES
+          this.pags = Math.round(this.beers.length / 15) + 1
+          if (this.beers.length % 15 === 0) {
+            this.pags -= 1
+          }
+
+        },
+        toAll() {
+          this.$router.push('/')
+          this.beers = this.$store.getters.BEERS(16)
+          this.pags = 6
         }
       }
     }
@@ -145,7 +164,7 @@
     margin-right: 30px;
   }
   .fav {
-    margin-left: 80px;
+    margin: 0 40px;
     max-width: 24px;
   }
   .picked {

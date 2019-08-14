@@ -40,7 +40,7 @@ export default new Vuex.Store ({
     SET_BEERS: (state, payload) => {
       state.beers = payload
       state.beers.forEach(function (beer) {
-        beer.isFavorite = false
+        beer.isFavorite = state.favorites.includes(beer)
       })
       state.loaded = true
     }
