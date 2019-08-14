@@ -84,7 +84,7 @@
           }
           this.loaded = true
         this.forceUpdate()
-          console.log('loaded')
+        console.log('loaded')
       },
       beforeUpdate() {
         if (this.$route.name === 'favorites') {
