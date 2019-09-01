@@ -20,15 +20,16 @@
                       </v-list-tile-title>
                       <v-divider></v-divider>
                       <v-list-tile-sub-title class="descr">
-                        <span title="Alcohol by volume">abv: {{beer.abv}}%</span>, <span title="International bitterness units">ibu: {{beer.ibu}}</span>
+                        <span title="Alcohol by volume">abv: {{beer.abv}}%</span>, <span v-if="beer.ibu" title="International bitterness units">ibu: {{beer.ibu}}</span>
+                        <span v-else title="International bitterness units">ibu: not defined</span>
                       </v-list-tile-sub-title>
 
                       <v-list-tile-action>
                           <v-icon v-if="beer.isFavorite" class="fav picked" @click="unfavBeer(beer)" title="Remove from favorites">
-                            favorite
+                            star
                           </v-icon>
                           <v-icon v-else class="fav" @click="favBeer(beer)" title="Add to favorites">
-                            favorite
+                            star
                           </v-icon>
                       </v-list-tile-action>
                       <v-list-tile-action>
@@ -66,7 +67,7 @@
 
         <v-btn @click="toFavorites">
           <span>Favorites</span>
-          <v-icon>favorite</v-icon>
+          <v-icon>star</v-icon>
         </v-btn>
 
       </v-bottom-navigation>
@@ -91,7 +92,8 @@
         if (!this.loaded)
           await this.$store.dispatch('getBeers')
         if (this.$route.name === 'favorites') {
-          this.beers = this.$store.getters.FAVORITES
+          this.page = 1
+          this.beers = this.$store.getters.FAVORITES((this.page - 1) * 15 + 1)
           this.activeBtn = 1
         } else {
           this.beers = this.$store.getters.BEERS((this.page - 1) * 15 + 1)
@@ -101,9 +103,9 @@
       },
       beforeUpdate() {
         if (this.$route.name === 'favorites') {
-          this.beers = this.$store.getters.FAVORITES
-          this.pags = Math.round(this.beers.length / 15) + 1
-          if (this.beers.length % 15 === 0) {
+          this.beers = this.$store.getters.FAVORITES((this.page - 1) * 15 + 1)
+          this.pags = Math.trunc(this.$store.getters.FAV_SIZE / 15) + 1
+          if (this.$store.getters.FAV_SIZE % 15 === 0) {
             this.pags -= 1
           }
         } else {
@@ -114,12 +116,10 @@
       methods: {
         favBeer(beer) {
           this.$store.dispatch('favBeer', beer)
-          this.beers = this.$store.getters.BEERS
           this.$forceUpdate()
         },
         unfavBeer(beer) {
           this.$store.dispatch('unfavBeer', beer)
-          this.beers = this.$store.getters.BEERS
           this.$forceUpdate()
         },
         moveTo(beer) {
@@ -127,9 +127,10 @@
         },
         toFavorites() {
           this.$router.push('favorites')
-          this.beers = this.$store.getters.FAVORITES
-          this.pags = Math.round(this.beers.length / 15) + 1
-          if (this.beers.length % 15 === 0) {
+          this.page = 1
+          this.beers = this.$store.getters.FAVORITES((this.page - 1) * 15 + 1)
+          this.pags = Math.trunc(this.$store.getters.FAV_SIZE / 15) + 1
+          if (this.$store.getters.FAV_SIZE % 15 === 0) {
             this.pags -= 1
           }
 

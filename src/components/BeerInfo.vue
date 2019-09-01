@@ -10,6 +10,8 @@
           <v-flex md9>
             <v-card-title>
               {{beer.name}}
+              <v-icon v-if="beer.isFavorite" class="fav" title="Remove from favorites" @click="unfav">star</v-icon>
+              <v-icon v-else class="unfav" title="Add to favorites" @click="fav">star</v-icon>
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text class="descr">
@@ -28,6 +30,9 @@
           </v-flex>
         </v-layout>
       </v-card>
+      <v-flex md2>
+        <v-btn dark class="back" @click="back"><v-icon>arrow_left</v-icon>Back</v-btn>
+      </v-flex>
     </v-flex>
   </v-layout>
 
@@ -75,7 +80,21 @@
       created() {
           this.beer = this.$store.getters.BEER(this.$route.params.id)
         document.title = this.beer.name
-    }
+      },
+      methods: {
+          back() {
+            history.back()
+            console.log('we are back')
+          },
+        fav() {
+          this.$store.dispatch('favBeer', this.beer)
+          this.$forceUpdate()
+        },
+        unfav() {
+          this.$store.dispatch('unfavBeer', this.beer)
+          this.$forceUpdate()
+        }
+      }
     }
 </script>
 
@@ -109,5 +128,15 @@
     color: black;
     display: block;
     font-size: initial;
+  }
+  .back {
+    margin-top: 20px
+  }
+  .fav {
+    color: rgb(255, 255, 0);
+    margin-left: 10px
+  }
+  .unfav {
+    margin-left: 10px
   }
 </style>
